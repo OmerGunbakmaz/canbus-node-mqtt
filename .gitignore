@@ -1,0 +1,19 @@
+# Build output
+Debug/
+Release/
+
+# Generated files
+*.elf
+*.map
+*.lst
+*.o
+*.d
+*.mk
+
+# IDE files
+.vscode/
+*.launch
+
+# OS junk
+.DS_Store
+Thumbs.db
