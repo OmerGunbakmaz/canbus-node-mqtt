@@ -97,7 +97,7 @@ PRIVATE void Start_Dht22(void)
 {
     gpio_output();
     HAL_GPIO_WritePin(wire_port, wire_pin, GPIO_PIN_RESET);
-    delay_(2000);
+    delay_(18000);
     HAL_GPIO_WritePin(wire_port, wire_pin, GPIO_PIN_SET);
     delay_(30);
     gpio_input();

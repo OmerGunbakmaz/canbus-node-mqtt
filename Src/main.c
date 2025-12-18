@@ -19,7 +19,7 @@ int main(void)
 
         if (result == 0)
         {
-            printf("Temp = %d.%d°C - Hum = %d.%d%% \r\n",
+            printf("Temp = %d.%dCelcius - Hum = %d.%d%% \r\n",
                    temp / 10, temp % 10, hum / 10, hum % 10);
         }
         else if (result == 1)
@@ -28,7 +28,11 @@ int main(void)
         }
         else if (result == 2)
         {
-            printf("Checksum hatasi!\r\n");
+            printf("Checksum hatasi! Temp = %d.%dCelcius - Hum = %d.%d%%  \r\n  temp_byte1 = %d , temp_byte2 = %d ,hum_byte1 = %d , hum_byte2 = %d Sum = %d , calculation = %d\r\n", temp / 10, temp % 10, hum / 10, hum % 10, Temp_byte1, Temp_byte2, Hum_byte1, Hum_byte2, Sum, ((Temp_byte1 + Temp_byte2 + Hum_byte1 + Hum_byte2) & 0xFF));
+        }
+        else if (result == 3)
+        {
+            printf("Bit okuma timeout!\r\n");
         }
 
         HAL_Delay(2000);
