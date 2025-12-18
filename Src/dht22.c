@@ -81,7 +81,7 @@ PRIVATE void gpio_output(void)
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-
+    
     HAL_GPIO_Init(wire_port, &GPIO_InitStruct);
 }
 PRIVATE void gpio_input(void)
@@ -89,7 +89,7 @@ PRIVATE void gpio_input(void)
     GPIO_InitTypeDef GPIO_InitStruct = {0};
     GPIO_InitStruct.Pin = wire_pin;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(wire_port, &GPIO_InitStruct);
 }
 
@@ -97,7 +97,7 @@ PRIVATE void Start_Dht22(void)
 {
     gpio_output();
     HAL_GPIO_WritePin(wire_port, wire_pin, GPIO_PIN_RESET);
-    delay_(18000);
+    delay_(2000);
     HAL_GPIO_WritePin(wire_port, wire_pin, GPIO_PIN_SET);
     delay_(30);
     gpio_input();

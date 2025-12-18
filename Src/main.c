@@ -9,7 +9,7 @@ int main(void)
 {
     HAL_Init();
     UART2_Init_GPIOA();
-    DHT22_Init(GPIOB, GPIO_PIN_0);
+    DHT22_Init(GPIOE, GPIO_PIN_3);
     uint16_t temp = 0;
     uint16_t hum = 0;
 
