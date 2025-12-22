@@ -2,13 +2,19 @@
 #ifndef DHT22_H
 #define DHT22_H
 
+
+typedef struct dth22_data{
+  uint16_t temperature;
+  uint16_t humidity;
+  uint8_t sum;
+  uint8_t checksum;
+  uint8_t data[4];
+}dht22_data; 
+
 void DHT22_Init(GPIO_TypeDef *Port, uint16_t Pin); // DHT22 initialize etme
-uint8_t DHT22_Get_Data(uint16_t *Temp, uint16_t *Hum);
+uint8_t DHT22_Get_Data(dht22_data *data);
 extern TIM_HandleTypeDef htim3;
 
-extern uint8_t Hum_byte1, Hum_byte2, Temp_byte1, Temp_byte2;
 extern uint16_t Sum;
-
-
 
 #endif

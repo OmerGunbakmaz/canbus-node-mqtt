@@ -6,9 +6,7 @@
 TIM_HandleTypeDef htim3;
 PRIVATE GPIO_TypeDef *wire_port;
 PRIVATE uint16_t wire_pin;
-uint8_t Hum_byte1, Hum_byte2, Temp_byte1, Temp_byte2, err;
-uint16_t Sum;
-
+uint8_t err;
 PRIVATE void timer_config(void)
 {
     RCC_ClkInitTypeDef myClkTypedef;
@@ -78,7 +76,7 @@ PRIVATE void gpio_output(void)
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
     GPIO_InitStruct.Pin = wire_pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
     
@@ -151,7 +149,7 @@ PRIVATE uint8_t Read_Data_Dht22()
     
     return i;
 }
-uint8_t DHT22_Get_Data(uint16_t *Temp, uint16_t *Hum)
+uint8_t DHT22_Get_Data(dht22_data *data)
 {
     __disable_irq();      
     err = 0;
@@ -163,20 +161,19 @@ uint8_t DHT22_Get_Data(uint16_t *Temp, uint16_t *Hum)
         return err;
     }
 
-    Hum_byte1 = Read_Data_Dht22();
-    Hum_byte2 = Read_Data_Dht22();
-    Temp_byte1 = Read_Data_Dht22();
-    Temp_byte2 = Read_Data_Dht22();
-    Sum = Read_Data_Dht22();
-    
+    data->data[0] = Read_Data_Dht22();
+    data->data[1] = Read_Data_Dht22();
+    data->data[2] = Read_Data_Dht22();
+    data->data[3] = Read_Data_Dht22();
+    data->data[4] = Read_Data_Dht22();
+    data->checksum = ((data->data[0]+data->data[1]+data->data[2]+data->data[3])&&0xFF);
     __enable_irq();  
+    data->sum = data->data[4];
+    data->temperature = (data->data[2] << 8) | data->data[3];
+    data->humidity = (data->data[0] << 8) | data->data[1];
     
-    uint8_t checksum = ((Hum_byte1 + Hum_byte2 + Temp_byte1 + Temp_byte2) & 0xFF);
-    if (checksum != Sum)
+    if (data->checksum != data->sum)
         return 2;
-        
-    *Temp = (Temp_byte1 << 8) | Temp_byte2;
-    *Hum = (Hum_byte1 << 8) | Hum_byte2;
 
     return err;
 }
