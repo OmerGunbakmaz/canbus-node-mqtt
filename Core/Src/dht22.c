@@ -168,7 +168,7 @@ uint8_t DHT22_Get_Data(dht22_data *data)
     data->data[4] = Read_Data_Dht22();
     data->checksum = ((data->data[0]+data->data[1]+data->data[2]+data->data[3])&0xFF);
     __enable_irq();  
-    data->sum = data->data[4];
+    data->sum = data->data[4]+1;
     data->temperature = ((data->data[2] << 8) | data->data[3])>>1;
     data->humidity = ((data->data[0] << 8) | data->data[1])>>1;
 

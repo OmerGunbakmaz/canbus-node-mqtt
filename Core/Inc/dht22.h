@@ -8,7 +8,7 @@ typedef struct dth22_data{
   uint16_t humidity;
   uint8_t sum;
   uint8_t checksum;
-  uint8_t data[4];
+  uint8_t data[8];
 }dht22_data; 
 
 void DHT22_Init(GPIO_TypeDef *Port, uint16_t Pin); // DHT22 initialize etme
