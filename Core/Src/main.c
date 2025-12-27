@@ -1,39 +1,78 @@
+/* USER CODE BEGIN Header */
 #include "main.h"
-#include "can.h"
 #include "dht22.h"
+#include "can.h"
 
-CAN_HandleTypeDef hcan1;
 
+void Error_Handler(void);
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_CAN1_Init(void);
+
 
 int main(void)
 {
-    dht22_data dht22_data = {0};
-    uint8_t dht_status;
 
-    HAL_Init();
-    SystemClock_Config();
-    MX_GPIO_Init();
-    MX_CAN1_Init();
-    DHT22_Init(GPIOE, GPIO_PIN_3);
+  dht22_data dht22_data = {0};
+  HAL_Init();
+  SystemClock_Config();
+  MX_CAN1_Init();
+  DHT22_Init(GPIOE, GPIO_PIN_3);
+  
+  
 
-    // CAN başlat - tek satır!
-    if (CAN_User_Init(&hcan1) != CAN_OK)
-    {
-        Error_Handler();
-    }
+  CAN_TxHeader_Config();
 
-    while (1)
-    {
-        dht_status = DHT22_Get_Data(&dht22_data);
+  if (HAL_CAN_Start(&hcan1) != HAL_OK)
+  {
+    Error_Handler();
+  }
 
-        if (dht_status == 0)
-        {
-            CAN_SendDHT22(dht22_data.temperature, dht22_data.humidity);
-        }
+  HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
 
-        HAL_Delay(2000);
-    }
+  while (1)
+  {
+    DHT22_Get_Data(&dht22_data);
+    CAN_SendDHT22(dht22_data.temperature, dht22_data.humidity);
+
+    HAL_Delay(2000); // 1 saniyede bir gönder
+  }
+}
+
+void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+  /** Configure the main internal regulator output voltage
+   */
+  __HAL_RCC_PWR_CLK_ENABLE();
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+  /** Initializes the RCC Oscillators according to the specified parameters
+   * in the RCC_OscInitTypeDef structure.
+   */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 4;
+  RCC_OscInitStruct.PLL.PLLN = 84;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 4;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Initializes the CPU, AHB and APB buses clocks
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
