@@ -30,10 +30,10 @@ int main(void)
 
   while (1)
   {
-    DHT22_Get_Data(&dht22_data);
-    CAN_SendDHT22(dht22_data.temperature, dht22_data.humidity);
+    // TEST: Sabit veri gönder (DHT22'yi bypass et)
+    CAN_SendDHT22(0x1234, 0x5678);  // Test verisi: temp=0x1234, hum=0x5678
 
-    HAL_Delay(2000); // 1 saniyede bir gönder
+    HAL_Delay(1000); // 1 saniyede bir gönder
   }
 }
 
