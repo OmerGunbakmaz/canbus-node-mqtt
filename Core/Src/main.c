@@ -2,54 +2,49 @@
 #include "main.h"
 #include "dht22.h"
 #include "can.h"
-
+#include <stdio.h>
+#include "uart.h"
 
 void Error_Handler(void);
 void SystemClock_Config(void);
-
-
+void Leds_Init_Discovery(void);
 int main(void)
 {
-
-  dht22_data dht22_data = {0};
   HAL_Init();
   SystemClock_Config();
-  MX_CAN1_Init();
-  DHT22_Init(GPIOE, GPIO_PIN_3);
-  
-  
 
+  DHT22_Init(GPIOE, GPIO_PIN_3);//dht22 sensor initialization
+  dht22_data dht22_data = {0};
+  
+  Leds_Init_Discovery();//Leds that i need to debug can bus for discovery board
+  MX_CAN1_Init();
   CAN_TxHeader_Config();
 
   if (HAL_CAN_Start(&hcan1) != HAL_OK)
   {
-    Error_Handler();
+    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET); // Red = Error
+    while (1)
+      ;
   }
 
-  HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET); // Green = CAN Bus is working
 
   while (1)
   {
     DHT22_Get_Data(&dht22_data);
     CAN_SendDHT22(dht22_data.temperature, dht22_data.humidity);
-
-    HAL_Delay(2000); // 1 saniyede bir gönder
+    HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);//Orange = Data sent
+    HAL_Delay(500);
   }
 }
-
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-  /** Configure the main internal regulator output voltage
-   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-  /** Initializes the RCC Oscillators according to the specified parameters
-   * in the RCC_OscInitTypeDef structure.
-   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -63,8 +58,6 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 
-  /** Initializes the CPU, AHB and APB buses clocks
-   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
@@ -75,4 +68,14 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+void Leds_Init_Discovery(void)
+{
+  __HAL_RCC_GPIOD_CLK_ENABLE();
+  GPIO_InitTypeDef gpio = {0};
+  gpio.Pin = GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
+  gpio.Mode = GPIO_MODE_OUTPUT_PP;
+  gpio.Pull = GPIO_NOPULL;
+  gpio.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOD, &gpio);
 }
