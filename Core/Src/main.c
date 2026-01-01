@@ -16,7 +16,7 @@ int main(void)
   DHT22_Init(GPIOE, GPIO_PIN_3);//dht22 sensor initialization
   dht22_data dht22_data = {0};
   
-  Leds_Init_Discovery();//Leds that i need to debug can bus for discovery board
+  Leds_Init_Discovery();//Leds that i need for debugging can bus in discovery board
   MX_CAN1_Init();
   CAN_TxHeader_Config();
 

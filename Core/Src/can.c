@@ -33,19 +33,7 @@ static void CAN_Filter_Config(void)
     Error_Handler();
   }
 }
-static void MX_GPIO_Init(void)
-{
-  GPIO_InitTypeDef gpio = {};
-  __HAL_RCC_GPIOH_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-  // CAN RX / TX
-  gpio.Pin = GPIO_PIN_8 | GPIO_PIN_9;
-  gpio.Mode = GPIO_MODE_AF_PP;
-  gpio.Pull = GPIO_NOPULL;
-  gpio.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  gpio.Alternate = GPIO_AF9_CAN1;
-  HAL_GPIO_Init(GPIOB, &gpio);
-}
+
 
 void CAN_TxHeader_Config(void)
 {
@@ -73,7 +61,7 @@ void MX_CAN1_Init(void)
 {
   hcan1.State = HAL_CAN_STATE_RESET;
   hcan1.Instance = CAN1;
-  hcan1.Init.Prescaler = 6;  // 3 → 6 oldu
+  hcan1.Init.Prescaler = 6; //500kbps
   hcan1.Init.Mode =  CAN_MODE_NORMAL;
   hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
   hcan1.Init.TimeSeg1 = CAN_BS1_11TQ;
@@ -89,7 +77,6 @@ void MX_CAN1_Init(void)
   {
     Error_Handler();
   }
-  MX_GPIO_Init();
   CAN_Filter_Config();
 }
 // void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
