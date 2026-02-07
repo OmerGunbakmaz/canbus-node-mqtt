@@ -1,19 +1,24 @@
-# Build output
-Debug/
-Release/
-
-# Generated files
-*.elf
-*.map
-*.lst
+# STM32 CubeIDE build files
+hardware/stm32/Debug/
+hardware/stm32/Release/
 *.o
+*.elf
+*.bin
+*.hex
+*.map
+*.list
 *.d
-*.mk
 
-# IDE files
-.vscode/
+# CubeIDE settings
+.metadata/
+.settings/
 *.launch
 
-# OS junk
+# Python
+__pycache__/
+*.pyc
+.env
+
+# OS
 .DS_Store
 Thumbs.db

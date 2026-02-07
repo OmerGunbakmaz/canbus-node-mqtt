@@ -1,0 +1,45 @@
+# Systemd Service for CAN to MQTT Bridge
+# Installation:
+# 1. sudo cp can2mqtt.service /etc/systemd/system/
+# 2. sudo systemctl daemon-reload
+# 3. sudo systemctl enable can2mqtt.service
+# 4. sudo systemctl start can2mqtt.service
+
+[Unit]
+Description=CAN Bus to MQTT Bridge for DHT22 Sensor
+Documentation=https://github.com/OmerGunbakmaz/canbus-node-mqtt
+After=network-online.target mosquitto.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/canbus-node-mqtt/software/raspberry
+
+# Initialize CAN interface before starting
+ExecStartPre=/bin/bash -c 'ip link set can0 down 2>/dev/null || true'
+ExecStartPre=/usr/sbin/ip link set can0 type can bitrate 500000
+ExecStartPre=/usr/sbin/ip link set can0 up
+
+# Start the Python script
+ExecStart=/usr/bin/python3 /home/pi/canbus-node-mqtt/software/raspberry/can2mqtt.py
+
+# Restart on failure
+Restart=always
+RestartSec=10
+
+# Clean up CAN interface on stop
+ExecStopPost=/usr/sbin/ip link set can0 down
+
+# Security hardening (optional)
+# NoNewPrivileges=true
+# PrivateTmp=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=can2mqtt
+
+[Install]
+WantedBy=multi-user.target

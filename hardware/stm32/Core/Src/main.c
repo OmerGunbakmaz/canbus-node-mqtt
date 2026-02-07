@@ -3,7 +3,6 @@
 #include "dht22.h"
 #include "can.h"
 #include <stdio.h>
-#include "uart.h"
 
 void Error_Handler(void);
 void SystemClock_Config(void);

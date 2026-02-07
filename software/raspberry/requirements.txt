@@ -1,0 +1,14 @@
+# CAN Bus to MQTT Bridge - Python Dependencies
+# Install: pip3 install -r requirements.txt
+
+# CAN Bus library for Linux SocketCAN
+python-can==4.3.1
+
+# MQTT client library
+paho-mqtt==1.6.1
+
+# Optional: For better CAN message handling
+cantools==39.4.0
+
+# Optional: For systemd service logging
+systemd-python==235

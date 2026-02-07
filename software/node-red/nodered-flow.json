@@ -1,0 +1,368 @@
+[
+    {
+        "id": "dht22_flow_tab",
+        "type": "tab",
+        "label": "DHT22 CAN-MQTT Dashboard",
+        "disabled": false,
+        "info": "Real-time temperature and humidity monitoring from DHT22 sensor via CAN Bus"
+    },
+    {
+        "id": "mqtt_in_dht22",
+        "type": "mqtt in",
+        "z": "dht22_flow_tab",
+        "name": "DHT22 Data",
+        "topic": "sensor/dht22",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "local_mosquitto",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "x": 110,
+        "y": 100,
+        "wires": [
+            [
+                "json_parser",
+                "debug_raw"
+            ]
+        ]
+    },
+    {
+        "id": "json_parser",
+        "type": "json",
+        "z": "dht22_flow_tab",
+        "name": "Parse JSON",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 290,
+        "y": 100,
+        "wires": [
+            [
+                "split_temp",
+                "split_hum"
+            ]
+        ]
+    },
+    {
+        "id": "split_temp",
+        "type": "change",
+        "z": "dht22_flow_tab",
+        "name": "Extract Temp",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.temperature",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 490,
+        "y": 60,
+        "wires": [
+            [
+                "temp_gauge",
+                "temp_chart",
+                "temp_text"
+            ]
+        ]
+    },
+    {
+        "id": "split_hum",
+        "type": "change",
+        "z": "dht22_flow_tab",
+        "name": "Extract Humidity",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.humidity",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 500,
+        "y": 140,
+        "wires": [
+            [
+                "hum_gauge",
+                "hum_chart",
+                "hum_text"
+            ]
+        ]
+    },
+    {
+        "id": "temp_gauge",
+        "type": "ui_gauge",
+        "z": "dht22_flow_tab",
+        "name": "Temperature Gauge",
+        "group": "sensors_group",
+        "order": 1,
+        "width": 4,
+        "height": 4,
+        "gtype": "gage",
+        "title": "Temperature",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "50",
+        "colors": [
+            "#00b4d8",
+            "#48cae4",
+            "#e63946"
+        ],
+        "seg1": "18",
+        "seg2": "25",
+        "x": 730,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "hum_gauge",
+        "type": "ui_gauge",
+        "z": "dht22_flow_tab",
+        "name": "Humidity Gauge",
+        "group": "sensors_group",
+        "order": 2,
+        "width": 4,
+        "height": 4,
+        "gtype": "gage",
+        "title": "Humidity",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#e9c46a",
+            "#f4a261",
+            "#2a9d8f"
+        ],
+        "seg1": "40",
+        "seg2": "70",
+        "x": 720,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "temp_chart",
+        "type": "ui_chart",
+        "z": "dht22_flow_tab",
+        "name": "Temperature History",
+        "group": "charts_group",
+        "order": 1,
+        "width": 12,
+        "height": 6,
+        "label": "Temperature (°C)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "Waiting for data...",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "50",
+        "removeOlder": "10",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#e63946",
+            "#aaaaaa",
+            "#ff7c43"
+        ],
+        "outputs": 1,
+        "x": 740,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "hum_chart",
+        "type": "ui_chart",
+        "z": "dht22_flow_tab",
+        "name": "Humidity History",
+        "group": "charts_group",
+        "order": 2,
+        "width": 12,
+        "height": 6,
+        "label": "Humidity (%)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "Waiting for data...",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": "10",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#2a9d8f",
+            "#aaaaaa",
+            "#00b4d8"
+        ],
+        "outputs": 1,
+        "x": 730,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "temp_text",
+        "type": "ui_text",
+        "z": "dht22_flow_tab",
+        "group": "current_values",
+        "order": 1,
+        "width": 6,
+        "height": 2,
+        "name": "Current Temp",
+        "label": "Current Temperature",
+        "format": "{{msg.payload}} °C",
+        "layout": "row-spread",
+        "x": 720,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "hum_text",
+        "type": "ui_text",
+        "z": "dht22_flow_tab",
+        "group": "current_values",
+        "order": 2,
+        "width": 6,
+        "height": 2,
+        "name": "Current Humidity",
+        "label": "Current Humidity",
+        "format": "{{msg.payload}} %",
+        "layout": "row-spread",
+        "x": 730,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "debug_raw",
+        "type": "debug",
+        "z": "dht22_flow_tab",
+        "name": "Raw MQTT Data",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 310,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "inject_test",
+        "type": "inject",
+        "z": "dht22_flow_tab",
+        "name": "Test Data",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"temperature\":25.5,\"humidity\":60.0,\"unit_temp\":\"C\",\"unit_hum\":\"%\"}",
+        "payloadType": "json",
+        "x": 120,
+        "y": 260,
+        "wires": [
+            [
+                "json_parser"
+            ]
+        ]
+    },
+    {
+        "id": "local_mosquitto",
+        "type": "mqtt-broker",
+        "name": "Local Mosquitto",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "nodered_dht22",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "sessionExpiry": ""
+    },
+    {
+        "id": "sensors_group",
+        "type": "ui_group",
+        "name": "Sensor Readings",
+        "tab": "main_dashboard",
+        "order": 1,
+        "disp": true,
+        "width": 12,
+        "collapse": false
+    },
+    {
+        "id": "charts_group",
+        "type": "ui_group",
+        "name": "Historical Data",
+        "tab": "main_dashboard",
+        "order": 2,
+        "disp": true,
+        "width": 12,
+        "collapse": false
+    },
+    {
+        "id": "current_values",
+        "type": "ui_group",
+        "name": "Current Values",
+        "tab": "main_dashboard",
+        "order": 3,
+        "disp": true,
+        "width": 12,
+        "collapse": false
+    },
+    {
+        "id": "main_dashboard",
+        "type": "ui_tab",
+        "name": "DHT22 Dashboard",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
