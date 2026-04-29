@@ -45,7 +45,7 @@ while True:
         })
 
         client.publish("sensor/dht22", payload)
-        client.publish("sensor/temp", json.dumps({"value": sicaklik}))
-        client.publish("sensor/hum", json.dumps({"value": nem}))
+        client.publish("sensor/temp", json.dumps({"value": temp}))
+        client.publish("sensor/hum", json.dumps({"value": num}))
 
         print(f"Temperature: {temp}C | Humidity: %{hum}")
